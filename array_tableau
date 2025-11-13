@@ -1,0 +1,44 @@
+$myArray = @("Test1","Test2","Test3")
+$myArray.count
+$myArray.Length
+$myArray
+$myArray[2]
+
+$myArray=$myArray+"Test4"
+$myArray += "Test5"
+
+$myArray=$myArray -ne "Test2" 
+
+
+$myArray.GetType()
+
+$myArray.IsFixedSize
+
+
+
+##################################
+
+
+
+
+$myList1 = [System.Collections.ArrayList]@()
+$myList = New-Object -TypeName System.Collections.ArrayList
+
+
+[void]$myList.Add("Test1")
+
+[void]$myList.Add("Test2")
+
+$myList.AddRange(@("Test3","Test4","Test5"))
+
+$myList.Count
+
+$myList.Remove("Test2")
+$myList
+
+
+$myList1.GetType()
+$myList.GetType()
+
+
+

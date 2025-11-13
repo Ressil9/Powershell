@@ -1,0 +1,504 @@
+🧩 SECTION 1 : Déclaration des paramètres et gestion initiale
+Param(
+    [Parameter(Mandatory = $false)] [string] $xmlFilesPath,
+    [Parameter(Mandatory = $false)] [string] $archivesFolderPath
+)
+
+🧠 Explication :
+
+Param(...) → Définit les paramètres d’entrée du script PowerShell.
+
+[Parameter(Mandatory = $false)] → Indique que ce paramètre n’est pas obligatoire.
+(Si on le met à $true, PowerShell obligerait l’utilisateur à fournir la valeur en ligne de commande.)
+
+[string] → Le type attendu : ici une chaîne de caractères.
+
+$xmlFilesPath → Chemin vers le dossier contenant les fichiers XML (ou .rxlog.data) à traiter.
+
+$archivesFolderPath → Chemin vers le dossier d’archives où seront déplacés les fichiers après traitement.
+
+🧩 En résumé :
+→ Si tu lances le script sans arguments, il utilisera les valeurs par défaut du fichier config.json.
+→ Si tu veux surcharger, tu peux faire :
+
+powershell .\readAndGetData.ps1 -xmlFilesPath "C:\data" -archivesFolderPath "C:\archives"
+
+
+
+
+
+
+
+
+
+🧩 SECTION 2 : Début du bloc Try global et import des modules
+try {
+    # ─── Get All The Module We Need ───────────────────────────────────────
+    ".\src\*" | Get-ChildItem -include '*.psm1' | Import-Module -Force
+
+🧠 Explication :
+
+try { ... } → Démarre un bloc de code surveillé : s’il y a une erreur, elle sera capturée par un catch.
+
+Le commentaire # ─── Get All The Module We Need ─── indique que cette partie charge les modules nécessaires.
+
+".\src\*" → Représente le chemin où se trouvent les modules PowerShell (dans le dossier src).
+
+Get-ChildItem -include '*.psm1' → Liste tous les fichiers se terminant par .psm1, c’est-à-dire les modules PowerShell.
+
+| Import-Module -Force → Importe chaque module dans la session PowerShell.
+-Force permet d’écraser une version déjà chargée si elle existe.
+
+👉 Cela permet au script d’utiliser des fonctions personnalisées comme write-log, buildEvent, sendDataToSplunk, etc.
+
+
+
+
+
+
+
+
+
+
+🧩 SECTION 3 : Variables globales et configuration de base
+    $Global:exitCode = 0
+    Set-Location $psScriptroot
+
+🧠 Explication :
+
+$Global:exitCode = 0
+→ Initialise un code de sortie global à 0, ce qui signifie succès.
+Ce code changera si une erreur survient (1 à 6 selon le type d’erreur).
+
+Set-Location $psScriptroot
+→ Change le répertoire de travail courant vers le dossier où se trouve le script PowerShell ($PSScriptRoot est une variable automatique contenant ce chemin).
+Cela garantit que les chemins relatifs utilisés plus tard (ex: .\config\config.json) fonctionneront correctement.
+
+
+
+
+
+
+
+🧩 SECTION 4 : Lecture du fichier de configuration
+    $config = Get-Content .\config\config.json -Raw | ConvertFrom-Json
+
+🧠 Explication :
+
+Get-Content .\config\config.json → Lit le contenu du fichier JSON de configuration.
+
+-Raw → Retourne le texte entier d’un seul bloc (sinon il le renverrait ligne par ligne).
+
+| ConvertFrom-Json → Convertit ce texte JSON en objet PowerShell pour accéder facilement aux propriétés :
+
+$config.xmlFolder
+$config.splunkToken
+$config.apiLinkSplunk
+…
+
+
+
+
+
+
+
+
+
+🧩 SECTION 5 : Détermination des chemins à utiliser
+    if ($archivesFolderPath) {
+        $archivesFolder = $archivesFolderPath
+    }
+    else {
+        $archivesFolder = $config.archivesFolder
+    }
+
+    if ($xmlFilesPath) {
+        $xmlPath = $xmlFilesPath
+    }
+    else {
+        $xmlPath = $config.xmlFolder
+    }
+
+    if ($config.dataExpirationTimeDay) {
+        $timeToDelete = $config.dataExpirationTimeDay
+    }
+
+🧠 Explication :
+
+Ces if/else permettent de prioriser les paramètres :
+
+Si l’utilisateur a fourni un chemin via la ligne de commande ($archivesFolderPath ou $xmlFilesPath), le script l’utilise.
+
+Sinon, il prend les valeurs du fichier config.json.
+
+🧩 Exemple :
+Si tu as :
+
+"archivesFolder": ".\\archives",
+"xmlFolder": ".\\data"
+
+
+et tu appelles :
+
+powershell .\readAndGetData.ps1 -xmlFilesPath "D:\tests"
+
+
+→ alors $xmlPath sera D:\tests, mais $archivesFolder restera .\archives.
+
+$timeToDelete → durée (en jours) avant de supprimer les anciens fichiers d’archives (par ex. 60 jours).
+
+
+
+
+
+
+
+
+
+🧩 SECTION 6 : Vérification des chemins
+    if (!(Test-Path -path $xmlPath)) {
+        throw "Error file or directory path does not exist: $xmlPath"
+        $Global:exitCode = 6
+    }
+
+    if (!(Test-Path -path $archivesFolder)) {
+        throw "Error file or directory path does not exist: $archivesFolder"
+        $Global:exitCode = 6
+    }
+
+🧠 Explication :
+
+Test-Path → Vérifie si le chemin existe (fichier ou dossier).
+
+!(...) → Négation → si le chemin n’existe pas, on exécute le bloc.
+
+throw "Error file or directory path does not exist: ..." → Interrompt le script et déclenche une erreur critique.
+
+$Global:exitCode = 6 → Définit un code d’erreur 6 = “incorrect file path”.
+
+🧩 Cela empêche le script de continuer si les chemins configurés sont invalides.
+
+
+
+
+
+
+
+
+🧩 SECTION 7 : Récupération des fichiers à traiter
+# get file in remote dir and exclude dir
+$files = Get-ChildItem -Path $xmlPath | Where-Object { ! $_.PSIsContainer -and $_.Name -like "*.rxlog.data" }
+
+🧠 Explication ligne par ligne :
+
+Get-ChildItem -Path $xmlPath
+→ liste tous les éléments (fichiers + dossiers) du dossier indiqué par $xmlPath.
+
+| Where-Object { ... }
+→ filtre ces éléments selon une condition.
+
+! $_.PSIsContainer
+→ exclut les répertoires (PSIsContainer = $true pour les dossiers).
+Donc on garde uniquement les fichiers.
+
+-and $_.Name -like "*.rxlog.data"
+→ ne garde que les fichiers dont le nom finit par .rxlog.data.
+
+🧩 Résultat :
+$files contient tous les fichiers Ranorex de test à analyser dans le dossier spécifié (ex. .\data).
+
+
+
+
+
+
+
+
+
+
+🧩 SECTION 8 : Lecture de la configuration Splunk
+# splunk token to authentify
+$splunkToken = $config.splunkToken
+
+# link to Rest api of splunk
+$apiLinkSplunk = $config.apiLinkSplunk
+
+# Source for splunk data filtering
+$splunkSource = $config.splunkSource
+
+write-log -message "Found $($files.Count) files" -type "i"
+
+🧠 Explication :
+
+$splunkToken → contient le token d’authentification pour Splunk (clé API).
+
+$apiLinkSplunk → contient le lien de l’API REST Splunk où les données seront envoyées.
+
+$splunkSource → définit la “source” que Splunk affichera pour ces événements (utile pour filtrer dans les dashboards).
+
+write-log -message ... -type "i"
+→ fonction personnalisée (importée depuis les modules .psm1)
+Elle enregistre un message d’information (-type "i") dans les logs du script.
+Ici, on indique combien de fichiers .rxlog.data ont été trouvés.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+🧩 SECTION 9 : Boucle principale — traitement des fichiers
+foreach ($file in $files) {
+    write-log -message "Process file: $($file.name)" -type "i"
+
+🧠 Explication :
+
+Le script boucle sur chaque fichier trouvé.
+$file contient des propriétés comme .FullName, .Name, .CreationTime, etc.
+→ Pour chaque fichier, il va analyser le contenu XML et envoyer les données à Splunk.
+
+🔹 Sous-section 9.1 : Lecture et parsing du fichier XML
+try {
+    [xml]$xmlContent = Get-Content $file.FullName
+
+
+[xml] → cast du contenu en objet XML PowerShell.
+
+$xmlContent devient un objet structuré (nœuds, attributs, etc.), permettant d’utiliser des sélecteurs XPath.
+
+🔹 Sous-section 9.2 : Sélection des “test cases”
+$all_activities = $xmlContent.SelectNodes("//activity[@type='test-case']")
+if ($all_activities.Count -eq 0) {
+    throw "Nothing to process in this file"
+}
+
+
+SelectNodes("//activity[@type='test-case']") → récupère tous les nœuds <activity> ayant type="test-case".
+Ce sont les tests individuels réalisés par Ranorex.
+
+Si aucun test n’est trouvé, on interrompt le traitement de ce fichier.
+
+🔹 Sous-section 9.3 : Extraction des métadonnées générales du fichier
+write-log -message "Found $($all_activities.Count) test cases to parse" -type "i"
+
+$computerHost = $($xmlContent.SelectSingleNode("//activity[@type='root']")).host
+$environment = $($xmlContent.SelectSingleNode("//param[@name='Environment']/text()")).Value
+$login = $($xmlContent.SelectSingleNode("//param[@name='Login']/text()")).Value
+$timestamp = $($xmlContent.SelectSingleNode("//activity[@type='root']")).timestamp
+
+🧠 Détail :
+
+//activity[@type='root'] → le nœud racine du test (celui qui englobe tout).
+
+.host et .timestamp → lecture des attributs host et timestamp du test global.
+
+Les deux lignes suivantes récupèrent les paramètres de test :
+
+Environment (ex: PROD, TEST)
+
+Login (nom d’utilisateur qui a lancé le test)
+
+🔹 Sous-section 9.4 : Nettoyage et résolution IP
+if ($login) { $login = $login.Trim() }
+if ($environment) { $environment = $environment.Trim() }
+
+# ─── Get The Ip Address From Dns ───────────────────────────────────────
+$adressIP = [System.Net.Dns]::GetHostAddresses($computerHost).ipaddresstostring[0]
+
+
+.Trim() → supprime les espaces autour du texte.
+
+[System.Net.Dns]::GetHostAddresses() → méthode .NET pour obtenir les adresses IP d’un hôte.
+
+.ipaddresstostring[0] → convertit en chaîne et prend la première adresse IP trouvée.
+
+🔹 Sous-section 9.5 : Gestion des erreurs de parsing
+} catch {
+    Write-Log -message "An error has occurred while parsing the file $($file.Name)." -type "e" -returnCode "001"
+    $Global:exitCode = 1
+}
+
+
+Si une erreur se produit (XML corrompu, balise manquante, etc.),
+on enregistre un message d’erreur (-type "e")
+et on fixe le code d’erreur global à 1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+🧩 SECTION 10 : Construction et envoi des événements Splunk
+🔹 Sous-section 10.1 : Boucle sur chaque activité “test-case”
+foreach ($activity in $all_activities) {
+    $Global:result = @()
+    try {
+        buildEvent -environment $environment -xml $activity -timestamp $timestamp -IP $adressIP  -rid $activity.rid -videoFile $activity.videoFile -parentDisplayName $activity.displayName -parentType $activity.type -login $login -state ([string]$activity.result)
+    }
+
+
+🧠 Détail :
+
+$Global:result = @() → initialise un tableau vide global (va contenir tous les événements produits).
+
+buildEvent (...) → fonction personnalisée (importée depuis les modules).
+Elle parcourt récursivement les sous-activités et construit un tableau d’événements structurés avec :
+
+environment, timestamp, IP, rid, displayName, type, result, etc.
+
+🔹 Sous-section 10.2 : Gestion d’erreur dans la construction
+catch {
+    $_
+    Write-Log -message "An error occurred when constructing the event" -type "e" -returnCode "001"
+    $Global:exitCode = 5
+}
+
+
+→ Si la fonction buildEvent échoue, on log l’erreur et on attribue le code 5 (“error when building the events”).
+
+🔹 Sous-section 10.3 : Formatage et envoi à Splunk
+try {
+    $body = $result | ForEach-Object {
+        $finalParentPath = $_.parentPath
+        if ($finalParentPath -eq "") { $finalParentPath = "root" }
+
+        $el = @{
+            parentPath  = $finalParentPath
+            displayName = $_.displayName
+            type        = $_.type
+            durationms  = $_.durationms
+            level       = $_.level
+            rid         = $_.rid
+            userName    = $_.userName
+            IPaddress   = $_.IP
+            environment = $_.environment
+            result      = $_.result
+            videoFile   = $_.videoFile
+        }
+
+        if ($_.errorMessage) {
+            $el | Add-Member -NotePropertyName "errorMessage" -NotePropertyValue $_.errorMessage
+        }
+
+        @{
+            "sourcetype" = "Ranorex_JSon"
+            "source"     = $splunkSource
+            "time"       = $_.time
+            "event"      = $el
+            "host"       = $computerHost
+        } | ConvertTo-json -Depth 5 -Compress
+    }
+
+    write-log -message "send elements of the test case $($activity.displayName) to Splunk" -type "i"
+    sendDataToSplunk -data $body -splunkserver $apiLinkSplunk -splunkToken $splunkToken
+
+🧠 Explication :
+
+Création du corps JSON ($body)
+
+On parcourt chaque élément du tableau $result.
+
+On construit une structure JSON compatible avec Splunk (sourcetype, source, event, host).
+
+Chaque événement contient les champs clés (durée, type, login, IP, etc.).
+
+Ajout conditionnel
+
+Si une activité contient une erreur (errorMessage), elle est ajoutée au JSON.
+
+Conversion JSON
+
+ConvertTo-Json -Depth 5 -Compress : convertit l’objet PowerShell en chaîne JSON compacte.
+
+Envoi
+
+sendDataToSplunk est une fonction personnalisée qui appelle l’API REST Splunk ($apiLinkSplunk) avec le token ($splunkToken) pour pousser les données.
+
+🔹 Sous-section 10.4 : Gestion des erreurs d’envoi
+catch {
+    throw "Error occurred while sending the data to splunk : $($file.Name)."
+    $Global:exitCode = 4
+}
+
+
+→ Si l’envoi échoue (connexion perdue, mauvais token, etc.), on arrête tout et on fixe le code 4.
+
+🔹 Sous-section 10.5 : Archivage du fichier traité
+write-log -message "Move file '$($file.Name)' to Archives directory" -type "i"
+$dest = "$archivesFolder\$($file.Name)"
+
+try {
+    Move-Item -Path $file.FullName -Destination $dest -ErrorAction Stop
+}
+catch {
+    $Global:exitCode = 2
+    throw "Error occurred while moving the file $($file.Name)."
+}
+
+
+🧠 Explication :
+
+Une fois le fichier traité, il est déplacé vers le dossier d’archives.
+
+Move-Item effectue le déplacement.
+
+Si le déplacement échoue (ex. fichier verrouillé), code d’erreur 2.
+
+🔹 Sous-section 10.6 : Nettoyage des vieux fichiers
+# delete all the files that are older than the date
+try {
+    $archivesFile = Get-ChildItem -Path $archivesFolder -Recurse -Include *.rxlog.data, *.png
+    foreach ($archiveFile in $archivesFile) {
+        $createdAtRelativeToToday = [math]::Floor(((Get-Date) - $archiveFile.CreationTime).TotalDays)
+        if ($createdAtRelativeToToday -ge $timeToDelete) {
+            Remove-Item -Path $archiveFIle -Force
+        }
+    }
+}
+catch {
+    $Global:exitCode = 3
+    throw "Error when deleting files"
+}
+
+🧠 Explication :
+
+On parcourt tous les fichiers .rxlog.data et .png dans les archives.
+
+On calcule leur âge en jours :
+
+(Get-Date) - $archiveFile.CreationTime
+
+
+Si le fichier est plus vieux que $timeToDelete (ex. 60 jours), il est supprimé.
+
+En cas d’erreur (fichier protégé, permission refusée), on fixe le code 3.
+
+🔹 Sous-section 10.7 : Code de sortie global
+exit $Global:exitCode
+
+
+→ Le script se termine en renvoyant le code de sortie final, ce qui permet à un système externe (ex. un orchestrateur CI/CD) de savoir si tout s’est bien passé.
