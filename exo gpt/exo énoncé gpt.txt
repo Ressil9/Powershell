@@ -1,0 +1,118 @@
+Niveau 1 : Bases et manipulation de fichiers
+
+Objectifs : cmdlets simples, variables, affichage.
+
+Liste tous les fichiers d’un dossier C:\Test.
+
+Cmdlet : Get-ChildItem
+
+Affiche le nom des fichiers seulement.
+
+Copie un fichier file.txt vers C:\Test\Backup.
+
+Cmdlet : Copy-Item
+
+Supprime tous les fichiers .tmp dans le dossier C:\Test.
+
+Cmdlet : Remove-Item
+
+Crée une variable $dossier pour stocker le chemin C:\Test et utilise-la pour lister les fichiers.
+
+💡 Concept ajouté : variables et commandes simples sur fichiers.
+
+
+
+
+Niveau 2 : Pipelines et filtrage
+
+Objectifs : filtrer, trier, travailler avec les propriétés des objets.
+
+Liste tous les fichiers .xml du dossier C:\Test.
+
+Cmdlet : Where-Object
+
+Affiche uniquement le nom et la taille des fichiers .txt.
+
+Trie les fichiers par taille décroissante.
+
+Compte le nombre de fichiers .csv dans le dossier.
+
+💡 Concept ajouté : pipelines (|), filtrage avec Where-Object, tri avec Sort-Object, propriétés d’objets.
+
+
+
+
+
+Niveau 3 : Boucles et conditions
+
+Objectifs : automatiser les actions répétitives.
+
+Pour chaque fichier .txt dans C:\Test :
+
+Affiche Le fichier [nom] fait [taille] octets.
+
+Déplace tous les fichiers .xml dont la taille > 1Mo vers C:\Test\Archives.
+
+Crée un script qui vérifie si un dossier existe :
+
+Si oui : affiche "Le dossier existe"
+
+Sinon : crée-le et affiche "Dossier créé"
+
+💡 Concept ajouté : foreach, if/else, automatisation de tâches répétitives.
+
+
+
+
+
+
+Niveau 4 : Paramètres et scripts réutilisables
+
+Objectifs : rendre les scripts flexibles et réutilisables.
+
+Crée un script MoveLargeFiles.ps1 avec deux paramètres :
+
+param(
+    [string]$SourceFolder,
+    [string]$TargetFolder
+)
+
+
+Déplace tous les fichiers > 1Mo de $SourceFolder vers $TargetFolder.
+
+Appelle ton script en ligne de commande avec différents dossiers.
+
+Ajoute un paramètre facultatif [int]$MinSize = 1048576 pour ne déplacer que les fichiers plus gros que la taille donnée.
+
+💡 Concept ajouté : paramètres dans les scripts, valeurs par défaut, scripts réutilisables.
+
+
+
+
+
+
+Niveau 5 : Fichiers XML et export de données
+
+Objectifs : lecture/écriture XML, export CSV, automatisation complète.
+
+Crée un fichier XML simple data.xml :
+
+<items>
+    <item id="1" name="Test1" value="100"/>
+    <item id="2" name="Test2" value="200"/>
+</items>
+
+
+Lis tous les éléments <item> et affiche Nom : [name], Valeur : [value].
+
+Transforme les données XML en CSV et sauvegarde-les dans C:\Test\data.csv.
+
+Intègre ton script dans une routine :
+
+Lit les fichiers XML d’un dossier
+
+Extrait les données
+
+Archive le fichier XML dans un dossier Archives
+
+💡 Concept ajouté : manipulation XML, export CSV, intégration de plusieurs notions.

@@ -1,0 +1,6 @@
+$serviceName = "Spooler"
+
+Get-Service -Name $serviceName
+
+Stop-Service -Name $serviceName
+Start-Service -Name $serviceName

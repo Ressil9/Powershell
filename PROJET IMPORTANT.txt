@@ -1,0 +1,25 @@
+See4C --> send file in JSON format --> 1636(serveur essilor) --> Splunk
+
+			query appel d'un call API --> SeeForC
+			On recupere les donnees on les transformes si necessaire
+			
+
+faire un schema d'UML avec un petit paragraphe d'explication 
+
+fichier temporaire contenant les configs le dernier timestamps
+
+dans le cas ou il y une interruption de de plusieurs jours chargement des donnees long alors pour fluidifier 
+comment temporiser
+
+Config Gateway 
+
+
+
+ & "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\dir_test\readAndGetData.ps1" `
+    -xmlFilesPath "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\dir_test\data" `
+    -archivesFolderPath "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\dir_test\archives"
+
+
+commande qui fonctionne 
+
+
