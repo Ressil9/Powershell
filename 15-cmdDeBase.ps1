@@ -1,30 +1,55 @@
-﻿#commande essentiel a connaitre 
+﻿################COMMANDES ESSENTIELLES À CONNAÎTRE###########################
 
 
 
-#Permet de trouver des commande
+#Affiche toutes les commandes PowerShell dont le verbe est New
+# (ex : New-Item, New-Object, New-Service…)
 Get-Command -Verb New
+
+
+
+#Affiche toutes les commandes disponibles dans le module ActiveDirectory
+#(ex : Get-ADUser, Get-ADGroup…)
 Get-Command -Module ActiveDirectory
 
-#Permet d'expliquer a quoi sert la commande
+
+
+#Affiche une description générale de la commande Start-Service.
 Get-Help Start-Service
-#rajoute des exemples d'utilisation de la commande 
+#Affiche uniquement des exemples pratiques d’utilisation.
 Get-Help Start-Service -Examples
-#donne un descriptif global de la commande 
+# Liste tous les paramètres disponibles pour cette commande.
 Get-Help Start-Service -Parameter
-#donne une aide plus complete
+#Donne toute l’aide complète : description, syntaxe, paramètres, exemples, remarques.
 Get-Help Start-Service -Full
-#donne une aide en ligne
+# Ouvre l’aide officielle sur le site Microsoft dans le navigateur.
 Get-Help Start-Service -Online
-#retourne les methodes et les proprietes
+
+
+
+
+
+#➡️Get-Service retourne les services Windows.
+#➡️ Get-Member affiche toutes les propriétés et méthodes disponibles sur ces objets.
 Get-Service | Get-Member
 
 
+
+#➡️ Récupère tous les processus.
+#➡️ Formatte l’affichage en tableau avec seulement Name et StartTime.
+#➡️ Stocke le résultat dans la variable $tab.
 $tab = Get-Process | Format-Table Name, StartTime
 
 
+
+#➡️ Affiche le service Windows Windows Update (wuauserv).
+#👉 Permet de connaître son état (Running, Stopped, etc.).
 Get-Service -Name "wuauserv"
-#info sur les lecteurs du systeme C: E: etc
+
+
+
+
+#Liste les lecteurs disponibles du système : C: E: etc
 Get-PSDrive
 
 
@@ -35,14 +60,15 @@ Get-PSDrive
 Get-ChildItem "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\Powershell"
 #lister le contenu d'un dossier et de ses sous-dossiers
 Get-ChildItem "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\Powershell" -Recurse
-#filtrage de la liste 
+#Liste uniquement les dossiers, pas les fichiers
 Get-ChildItem "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau" -Directory
 #liste tous les fichiers dont l'extension est en pdf
 Get-ChildItem "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau" -Recurse -Filter "*.pdf"
 #exlue tous les fichiers dont l'exension est en PDF
 Get-ChildItem "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau*" -Directory -Exclude "*.jpeg","*.pdf"
 
-#donne des informations precises sur un fichier
+#➡️ Récupère un fichier précis.
+#➡️ Affiche uniquement les propriétés sélectionnées :
 Get-Item "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\Powershell\textFile4-15cmdl.txt" |`
 Select-Object Name, CreationTime,LastAccessTime, LastWriteTime
 
@@ -55,6 +81,8 @@ Get-Content -Path "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\Power
 Get-Content -Path "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\Powershell\textFile4-15cmdl.txt" -Tail 3
 #cette commande permet de definir un chemin 
 Set-Location "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A"
+
+
 
 
 
@@ -89,4 +117,4 @@ Test-Connection 1.1.1.1 -Continuous
 Test-Connection www.facebook.fr, www.apple.com -Count 1
 
 #commande pour identifier l'itiniraire reseau -tracert ou -Traceroute
-www.facebook.fr -tracert
+Test-Connection www.facebook.fr -Traceroute
