@@ -1,0 +1,23 @@
+1 -eq 1 #equals
+2 -ne 1 #not equals
+1 -lt 2 #less than
+9 -le 2 #less or equal 
+8 -gt 1 #greater than
+3 -ge 5 #greater or equal
+
+@(1,2,3) -contains 4
+@('Test','test') -contains 'TEST'
+@('Test','test') -ccontains 'TEST' #key sensitive
+
+'Test' -eq 'TEST'
+'Test' -ceq 'TEST'
+
+$filePath = "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\Powershell\conditions" 
+Test-Path -Path $filePath
+
+if (Test-Path -Path $filePath) {
+        Get-Content -Path $filePath
+
+} else {
+    Write-Output "File '$filepath' does not exist"
+}
