@@ -1,0 +1,97 @@
+############ PARTIE 1 — HASHTABLE ###############################
+############ Création de la hashtable ###############################
+$myHashtable = @{
+    key1 = 100                # Clé "key1" → valeur 100 (entier)
+    apple = 2.7               # Clé "apple" → valeur 2.7 (float)
+    name = 'John Doe'         # Clé "name" → texte
+    key2 = 2                  # Clé "key2" → entier
+}
+#affiche les valeurs 
+$myHashtable.Values
+#affiche les cles
+$myHashtable.Keys
+
+# Accéder à la valeur via dot notation
+$myHashtable.apple
+
+
+# Accéder à la valeur via indexation
+$myHashtable['apple']
+
+# Vérifier si une clé existe
+$myHashtable.ContainsKey('key2')
+
+
+#Vérifier si une valeur existe
+$myHashtable.ContainsValue('Jonh Doe')
+
+
+#Ajouter une entrée avec Add()
+$myHashtable.Add('key4','testing and function')
+
+
+
+# Ajouter une entrée par indexation
+$myHashtable['key5'] = "added via square bracket"
+
+
+# Ajouter une entrée via dot notation
+$myHashtable.key6 = "added via dot notation"
+
+
+
+# Supprimer une entrée
+$myHashtable.Remove('apple')
+
+
+
+
+
+
+############ PARTIE 2 — PSCUSTOMOBJECT ###############################
+
+# Voir le type de l’objet employé
+$Employee1.GetType()
+
+# Créer un PSCustomObject vide
+$Employee1 = New-Object -TypeName PSCustomObject
+
+# Ajouter des propriétés une par une
+
+# Ajoute la propriété EmployeeID
+Add-Member -InputObject $Employee1 -MemberType NoteProperty `
+-Name 'EmployeeID' -Value '1001'
+
+# Ajoute FirstName 
+Add-Member -InputObject $Employee1 -MemberType NoteProperty `
+-Name 'FirstName' -Value 'Penny'
+
+# Ajoute Title
+Add-Member -InputObject $Employee1 -MemberType NoteProperty `
+-Name 'Title' -Value 'CEO'
+
+
+# Afficher une propriété
+$Employee1.EmployeeID
+
+# Voir toutes les propriétés et méthodes
+Get-Member -InputObject $Employee1
+
+############ Méthode moderne pour créer un PSCustomObject (recommandée) ###############################
+
+$Employee2 = [PSCustomObject]@{
+    EmployeeID = '1001'
+    Firstname  = 'Penny'
+    Title      = 'CEO'
+}
+
+
+
+
+
+
+
+
+############ PARTIE 1 — HASHTABLE ###############################
+############ PARTIE 1 — HASHTABLE ###############################
+############ PARTIE 1 — HASHTABLE ###############################

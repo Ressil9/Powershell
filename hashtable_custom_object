@@ -1,9 +1,0 @@
-$myHashtable = @{
-    key1 = 100
-    apple = 2.7
-    name = 'John Doe'
-    key2 = 2
-}
-
-#$myHashtable.Keys
-$myHashtable.Values

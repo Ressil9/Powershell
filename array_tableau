@@ -1,44 +1,66 @@
-$myArray = @("Test1","Test2","Test3")
-$myArray.count
-$myArray.Length
-$myArray
-$myArray[2]
+##################### PARTIE 1 — Les tableaux PowerShell (@() )############################
 
-$myArray=$myArray+"Test4"
-$myArray += "Test5"
-
-$myArray=$myArray -ne "Test2" 
-
-
-$myArray.GetType()
-
-$myArray.IsFixedSize
+$myArray = @("Test1","Test2","Test3")      # Crée un tableau contenant 3 chaînes : Test1, Test2, Test3
+$myArray.count                             # Affiche le nombre d’éléments du tableau (3)
+$myArray.Length                            # Identique à Count : donne la longueur du tableau
+$myArray                                   # Affiche tout le contenu du tableau
+$myArray[2]                                 # Affiche l’élément d’index 2 → "Test3" (car index commence à 0)
 
 
 
-##################################
+################### Ajout d’éléments (recréation du tableau)  #########################
+$myArray=$myArray+"Test4"                  # Ajoute "Test4" en recréant un NOUVEAU tableau
+$myArray += "Test5"                        # Ajoute "Test5", équivalent à la ligne au-dessus
 
 
 
 
-$myList1 = [System.Collections.ArrayList]@()
-$myList = New-Object -TypeName System.Collections.ArrayList
+################### Suppression d’un élément #########################
+
+$myArray=$myArray -ne "Test2"              # Crée un nouveau tableau contenant tous les éléments sauf "Test2"
 
 
-[void]$myList.Add("Test1")
-
-[void]$myList.Add("Test2")
-
-$myList.AddRange(@("Test3","Test4","Test5"))
-
-$myList.Count
-
-$myList.Remove("Test2")
-$myList
+################### Informations sur le tableau #########################
+$myArray.GetType()                         # Affiche le type → System.Object[] (tableau d’objets PowerShell)
+$myArray.IsFixedSize                       # True → les tableaux sont de taille fixe (doivent être recréés pour changer)
 
 
-$myList1.GetType()
-$myList.GetType()
 
+
+################### PARTIE 2 — Les ArrayList (.NET) #########################
+
+################### Création #########################
+$myList1 = [System.Collections.ArrayList]@()   # Crée une ArrayList vide (méthode 1)
+$myList = New-Object -TypeName System.Collections.ArrayList    # Crée une ArrayList vide (méthode 2)
+
+
+
+
+################### Ajouts #########################
+[void]$myList.Add("Test1")                 # Ajoute "Test1" (renvoie un index, donc on met [void])
+[void]$myList.Add("Test2")                 # Ajoute "Test2"
+$myList.AddRange(@("Test3","Test4","Test5"))  # Ajoute plusieurs éléments d’un coup
+
+
+
+
+################### Suppressions #########################
+$myList.Remove("Test2")                    # Supprime l’élément "Test2"
+$myList.RemoveAt(0)                        # Supprime l’élément d’index 0
+$myList.RemoveRange(0,2)                   # Supprime 2 éléments à partir de l’index 0
+
+
+
+
+################### Affichage de la liste #########################
+$myList                                    # Affiche le contenu restant dans l'ArrayList
+
+
+
+$array = @()
+Measure-Command -Expression {@(0..50000).ForEach({array+=$_})}
+
+
+$arrayList = New-Object -TypeName Sys tem.Collections.ArrayList
 
 

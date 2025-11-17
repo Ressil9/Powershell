@@ -1,0 +1,191 @@
+✅ Exercices PowerShell — Progression basée sur ton script
+🔰 Niveau 1 — Découverte et documentation
+Exercice 1 — Trouver des commandes
+
+Trouve toutes les commandes qui servent à créer quelque chose (verbe New).
+
+Trouve toutes les commandes du module ActiveDirectory (même si tu ne l’as pas installé).
+
+👉 Utilise uniquement :
+
+Get-Command
+
+Exercice 2 — Comprendre les commandes
+
+Pour la cmdlet Start-Service :
+
+Affiche uniquement les exemples.
+
+Affiche la liste complète de l’aide.
+
+Affiche l’aide en ligne.
+
+Trouve les paramètres de la commande.
+
+👉 Utilise :
+
+Get-Help
+
+Exercice 3 — Explorer les objets
+
+Liste tous les services Windows.
+
+Trouve toutes les propriétés disponibles sur les objets “Service”.
+
+👉 Utilise :
+
+Get-Service | Get-Member
+
+🟦 Niveau 2 — Fichiers & dossiers
+Exercice 4 — Explorer ton système
+
+Liste le contenu de ton dossier PowerShell.
+
+Liste aussi les sous-dossiers.
+
+Liste uniquement les dossiers.
+
+Liste tous les fichiers PDF dans ton dossier OneDrive.
+
+Liste tous les fichiers sauf les PDF et JPEG.
+
+👉 Commandes à utiliser :
+
+Get-ChildItem
+Get-Item
+Select-Object
+
+Exercice 5 — Informations sur un fichier
+
+Affiche pour un fichier de ton choix :
+
+son nom
+
+sa date de création
+
+sa date de dernière modification
+
+sa date d’accès
+
+👉 Utilise :
+
+Get-Item | Select-Object
+
+🟧 Niveau 3 — Lire/écrire des fichiers
+Exercice 6 — Lecture de fichier
+
+À partir d’un fichier texte :
+
+Affiche tout son contenu.
+
+Affiche uniquement les 3 premières lignes.
+
+Affiche uniquement les 3 dernières lignes.
+
+👉 Commande :
+
+Get-Content
+
+Exercice 7 — Créer des éléments
+
+Crée un dossier nommé PSTest sur ton bureau.
+
+Va dans ce dossier (Set-Location).
+
+Crée un fichier vide nommé test1.txt.
+
+Crée 2 fichiers dans des chemins différents (en un seul appel).
+
+👉 Commandes :
+
+New-Item
+Set-Location
+
+Exercice 8 — Supprimer des fichiers
+
+Dans ton bureau, supprime uniquement les fichiers .txt, sans toucher aux autres.
+
+👉 Commande :
+
+Remove-Item -Include
+
+🟪 Niveau 4 — Tests & dates
+Exercice 9 — Vérifier un chemin
+
+Vérifie si le chemin suivant existe :
+
+C:\Users\Public\Documents
+
+
+Si oui → affiche “Existe déjà”
+Si non → affiche “N'existe pas”
+
+👉 Commande :
+
+Test-Path
+
+Exercice 10 — Gérer les dates
+
+Affiche la date du jour.
+
+Affiche la date au format yyyyMMdd.
+
+Affiche la date au format dd/MM/yy.
+
+Affiche une date pour créer un fichier horodaté (ex. 20250112_1830).
+
+👉 Commande :
+
+Get-Date -Format
+
+🟥 Niveau 5 — Réseau
+Exercice 11 — Tests de connectivité
+
+Pinge l’adresse 1.1.1.1 une fois.
+
+Fais un ping continu de 1.1.1.1.
+
+Pinge en une seule commande :
+
+www.facebook.fr
+
+www.apple.com
+
+👉 Commande :
+
+Test-Connection
+
+Exercice 12 — Traceroute
+
+Fais un traceroute du site de ton choix.
+
+👉 Utilise :
+
+Test-Connection -Traceroute
+
+
+ou
+
+tracert www.facebook.fr
+
+🟩 Niveau 6 — Mini-Challenge final
+
+🎯 Objectif : utiliser toutes les commandes de ton script dans un seul exercice.
+
+Crée un script AnalyseSysteme.ps1 qui :
+
+Affiche la date au format yyyyMMdd_hhmm.
+
+Vérifie si un dossier PSTest existe sur ton bureau :
+
+Sinon → le crée.
+
+Récupère la liste de tous les fichiers PDF dans ton OneDrive.
+
+Sauvegarde la liste dans un fichier texte créé automatiquement dans “PSTest”.
+
+Test la connexion vers www.google.com.
+
+Affiche la liste des 10 derniers services modifiés.
+
+Si tu veux, je peux aussi te créer le corrigé complet de ce challenge
