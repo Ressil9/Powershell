@@ -1,0 +1,37 @@
+for ($i=0;$i -lt 10;$i++) {
+    Write-Output $i
+}
+
+$testArray= @('Steve','John','Tim')
+for($i=0;$i -lt 3; $i++) {
+    #Write-Output $testArray[$i]
+    $testArray[$i] +=' Doe'
+    Write-Output $testArray[$i]
+
+} 
+Write-Output $testArray
+
+#creer une copie ne touche pas au tableau
+foreach ($item in $testArray) {
+    $item += ' Doe'
+    Write-Output $item
+}
+
+
+Get-Date
+
+while ((Get-Date).Minute -eq 21) {
+    Get-Date
+}
+
+while ($true) { 
+    Write-Output "Welcome to the parrot application"
+    Write-Output "Enter 'q' to quit"
+
+    $input = Read-Host -Prompt "Please enter a phrase"
+    if ($input -eq 'q') {
+        break
+    }
+    Write-Output "You entered : $input"
+    
+}

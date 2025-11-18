@@ -1,0 +1,36 @@
+Context : We want to load data from See4C toward Splunk. We aim for a solution that behaves as close as possible to real-time monitoring.
+
+We will use PowerShell throughout the project because it is both efficient and familiar to us.
+
+
+
+We've got three cases : 
+
+Case 1 : 
+
+1 : PowerShell requests the latest timestamp stored in Splunk.
+2 : Splunk returns the last recorded timestamp.
+3 : We use the timestamp as a parameter of the "call API" by using the protocol OData, the data in a JSON format
+4 : PowerShell receives the data returned by the API.
+5 : PowerShell checks whether the amount of data received can be loaded in a single batch into Splunk. If yes, continue.
+6 : The final transformed dataset is sent to Splunk.
+
+
+Case 2 : 
+
+1 : //
+2 : //
+3 : //
+4 : //
+5 : PowerShell determines that the amount of data is too large to be loaded at once
+6 : PowerShell sends a partial batch of data to Splunk.
+8 : The process iterates until all data has been successfully transferred.
+
+Case 3 :
+
+1 : //
+2 : //
+3 : //
+4 : The API call fails → Error code: See4C API unreachable.
+
+

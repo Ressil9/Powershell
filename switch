@@ -1,0 +1,52 @@
+$filePath = "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau\Powershell\exemple.txt" 
+
+$Data = Get-Content -Path $filePath
+
+$firstName = $Data[0]
+
+if ($firstName -eq 'Biju') {
+    Write-Output "My name is Biju"
+} elseif ($firstName -eq 'Kaido') {
+    Write-Output "My name is Kaido"
+} elseif ($firstName -eq 'Rolov') {
+    Write-Output "My name is Rolov"
+} else {
+    Write-Output "I don't know my name"
+}
+
+switch ($firstName) {
+    "Biju" {
+        Write-Output "My name is Biju"
+        break
+    }
+    "Kaido" {
+        Write-Output "My name is Kaido"
+        break
+
+    }
+    "Rolov" {
+        Write-Output "My name is Rolov"
+        break
+
+    }
+    default {
+        Write-Output "I don't know my name"
+        break
+    }
+}
+
+switch ($Data.Count) {
+    {$_ -lt 2} {
+        Write-Output "This file has less than 2 lines"
+    }
+    {$_ -eq 7} {
+        Write-Output "This file has 7 lines exactly"
+    }
+    {$_ -lt 8..9 } {
+        Write-Output "This file has less than 10 lines, at least 8 lines"
+    }
+    default {
+        Write-Output "This file has 10 or more lines"
+
+    } 
+}
