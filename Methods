@@ -1,0 +1,17 @@
+
+ New-Item -Path $ConfigPath -Name "TestConfig1.cfg" -ItemType File
+ New-Item -Path $ConfigPath -Name "TestConfig2.cfg" -ItemType File
+
+ function Create-Configuration {
+    [CmdletBinding()]
+    param(
+        [Paramater(Mandatory)]
+        [string]$Name
+    )
+    Write-Output "This is my function"
+ } 
+
+ Create-Configuration
+
+ $ConfigPath = "C:\Users\MachNP\OneDrive - Luxottica Group S.p.A\Bureau"
+

@@ -1,0 +1,12 @@
+$($env:PSModulePath).split(';')
+
+Get-Module -ListAvailable
+
+Import-Module -Name ScheduledTasks
+Remove-Module -Name ScheduledTasks
+
+
+Import-Module -Name ScheduledTasks -Force
+
+Find-Module -Name AzureAD
+

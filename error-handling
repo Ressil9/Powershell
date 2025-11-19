@@ -1,0 +1,15 @@
+$ErrorActionPreference = "Stop"
+
+
+try {
+    $filePath = "C://ErrorOnPurpose"
+    $files = Get-ChildItem -Path $filePath
+    $files.foreach({
+        Write-Output $_.name
+    })
+    Write-Output "This is after the error"
+} catch {
+    Write-Output "caught error"   #$_.Exception.Message
+} finally {
+    Write-Output "This always run no matter what !"
+}

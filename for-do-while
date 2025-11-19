@@ -32,6 +32,12 @@ while ($true) {
     if ($input -eq 'q') {
         break
     }
-    Write-Output "You entered : $input"
-    
+    Write-Output "You entered : $input" 
 }
+
+
+
+do {
+    Write-Output "Hi"
+}
+while ($false)
